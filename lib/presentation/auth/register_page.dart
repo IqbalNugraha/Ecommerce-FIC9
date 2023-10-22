@@ -1,4 +1,9 @@
+import 'package:fic9_ecommerce_template_app/bloc/register/register_bloc.dart';
+import 'package:fic9_ecommerce_template_app/common/constants/variables.dart';
+import 'package:fic9_ecommerce_template_app/data/models/request/register_request_model.dart';
+import 'package:fic9_ecommerce_template_app/presentation/auth/login_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../common/components/button.dart';
 import '../../common/components/custom_text_field.dart';
@@ -45,7 +50,7 @@ class _RegisterPageState extends State<RegisterPage> {
           const SpaceHeight(24.0),
           const Center(
             child: Text(
-              "Mari mulai",
+              Variables.letStart,
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w700,
@@ -56,7 +61,7 @@ class _RegisterPageState extends State<RegisterPage> {
           const SpaceHeight(8.0),
           const Center(
             child: Text(
-              "Buat akun baru",
+              Variables.createNewAccount,
               style: TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.w400,
@@ -67,31 +72,81 @@ class _RegisterPageState extends State<RegisterPage> {
           const SpaceHeight(40.0),
           CustomTextField(
             controller: emailController,
-            label: 'Email',
+            label: Variables.hintEmail,
           ),
           const SpaceHeight(12.0),
           CustomTextField(
             controller: nameController,
-            label: 'Name',
+            label: Variables.hintUsername,
           ),
           const SpaceHeight(12.0),
           CustomTextField(
             controller: passwordController,
-            label: 'Password',
+            label: Variables.hintPassword,
             obscureText: true,
           ),
           const SpaceHeight(12.0),
           CustomTextField(
             controller: confirmPasswordController,
-            label: 'Konfirmasi Password',
+            label: Variables.hintRePassword,
             obscureText: true,
           ),
           const SpaceHeight(24.0),
-          Button.filled(
-            onPressed: () {
-              Navigator.pop(context);
+          BlocConsumer<RegisterBloc, RegisterState>(
+            listener: (context, state) {
+              state.maybeWhen(
+                orElse: () {},
+                success: (data) {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const LoginPage(),
+                    ),
+                  );
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text(Variables.successRegister),
+                      backgroundColor: Colors.green,
+                    ),
+                  );
+                },
+                error: (message) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(message),
+                      backgroundColor: ColorName.red,
+                    ),
+                  );
+                },
+              );
             },
-            label: 'Daftar',
+            builder: (context, state) {
+              return state.maybeWhen(
+                orElse: () {
+                  return Button.filled(
+                    onPressed: () {
+                      final registerRequestModel = RegisterRequestModel(
+                        name: nameController.text,
+                        password: passwordController.text,
+                        email: emailController.text,
+                        username: nameController.text.replaceAll(' ', ''),
+                      );
+                      context
+                          .read<RegisterBloc>()
+                          .add(RegisterEvent.register(registerRequestModel));
+                    },
+                    label: Variables.btnRegister,
+                  );
+                },
+                loading: () {
+                  return const Center(
+                    child: CircularProgressIndicator(
+                      color: ColorName.primary,
+                    ),
+                  );
+                },
+              );
+            },
           ),
           const SpaceHeight(60.0),
           Center(
@@ -101,10 +156,10 @@ class _RegisterPageState extends State<RegisterPage> {
               },
               child: const Text.rich(
                 TextSpan(
-                  text: "Sudah punya akun? ",
+                  text: Variables.haveAccount,
                   children: [
                     TextSpan(
-                      text: "Sign In",
+                      text: Variables.btnLogin,
                       style: TextStyle(color: ColorName.primary),
                     ),
                   ],
