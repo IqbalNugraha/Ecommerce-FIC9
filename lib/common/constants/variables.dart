@@ -25,4 +25,6 @@ class Variables {
   //util
   static const String successRegister = "Berhasil Mendaftar";
   static const String successLogin = "Berhasil Masuk";
+  static const String passwordEmpty = "Tidak Boleh Kosong";
+  static const String passwordNotSame = "Password tidak sama";
 }

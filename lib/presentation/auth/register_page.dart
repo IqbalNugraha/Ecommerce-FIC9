@@ -23,6 +23,41 @@ class _RegisterPageState extends State<RegisterPage> {
   final nameController = TextEditingController();
   final passwordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
+  bool _hidePassword = true;
+  bool _hideRePassword = true;
+  String? _errorText;
+
+  @override
+  void initState() {
+    passwordController.addListener(() {
+      if (passwordController.text.isEmpty &&
+          confirmPasswordController.text.isEmpty) {
+        setState(() {
+          _errorText = Variables.passwordEmpty;
+        });
+      } else if (passwordController.text != confirmPasswordController.text) {
+        setState(() {
+          _errorText = Variables.passwordNotSame;
+        });
+      } else {
+        setState(() {
+          _errorText = null;
+        });
+      }
+    });
+    confirmPasswordController.addListener(() {
+      if (passwordController.text != confirmPasswordController.text) {
+        setState(() {
+          _errorText = Variables.passwordNotSame;
+        });
+      } else {
+        setState(() {
+          _errorText = null;
+        });
+      }
+    });
+    super.initState();
+  }
 
   @override
   void dispose() {
@@ -73,6 +108,7 @@ class _RegisterPageState extends State<RegisterPage> {
           CustomTextField(
             controller: emailController,
             label: Variables.hintEmail,
+            textInputType: TextInputType.emailAddress,
           ),
           const SpaceHeight(12.0),
           CustomTextField(
@@ -83,13 +119,37 @@ class _RegisterPageState extends State<RegisterPage> {
           CustomTextField(
             controller: passwordController,
             label: Variables.hintPassword,
-            obscureText: true,
+            obscureText: _hidePassword,
+            errorText: _errorText,
+            suffixIcon: GestureDetector(
+              onTap: () {
+                setState(() {
+                  _hidePassword = !_hidePassword;
+                });
+              },
+              child: Icon(
+                _hidePassword ? Icons.visibility_off : Icons.visibility_rounded,
+              ),
+            ),
           ),
           const SpaceHeight(12.0),
           CustomTextField(
             controller: confirmPasswordController,
             label: Variables.hintRePassword,
-            obscureText: true,
+            obscureText: _hideRePassword,
+            errorText: _errorText,
+            suffixIcon: GestureDetector(
+              onTap: () {
+                setState(() {
+                  _hideRePassword = !_hideRePassword;
+                });
+              },
+              child: Icon(
+                _hideRePassword
+                    ? Icons.visibility_off
+                    : Icons.visibility_rounded,
+              ),
+            ),
           ),
           const SpaceHeight(24.0),
           BlocConsumer<RegisterBloc, RegisterState>(

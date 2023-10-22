@@ -1,6 +1,7 @@
 import 'package:fic9_ecommerce_template_app/bloc/login/login_bloc.dart';
 import 'package:fic9_ecommerce_template_app/common/constants/images.dart';
 import 'package:fic9_ecommerce_template_app/common/constants/variables.dart';
+import 'package:fic9_ecommerce_template_app/data/datasources/local_remote_datasources.dart';
 import 'package:fic9_ecommerce_template_app/data/models/request/login_request_model.dart';
 import 'package:fic9_ecommerce_template_app/presentation/home/dashboard_page.dart';
 import 'package:flutter/material.dart';
@@ -22,6 +23,28 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
+  bool _hidePassword = true;
+
+  @override
+  void initState() {
+    checkAuth();
+    super.initState();
+  }
+
+  void checkAuth() async {
+    final auth = await LocalRemoteDatasource().getToken();
+    if (auth.isNotEmpty) {
+      if (mounted) {
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const DashboardPage(),
+          ),
+          (route) => false,
+        );
+      }
+    }
+  }
 
   @override
   void dispose() {
@@ -70,12 +93,23 @@ class _LoginPageState extends State<LoginPage> {
           CustomTextField(
             controller: emailController,
             label: Variables.hintEmail,
+            textInputType: TextInputType.emailAddress,
           ),
           const SpaceHeight(12.0),
           CustomTextField(
             controller: passwordController,
             label: Variables.hintPassword,
-            obscureText: true,
+            obscureText: _hidePassword,
+            suffixIcon: GestureDetector(
+              onTap: () {
+                setState(() {
+                  _hidePassword = !_hidePassword;
+                });
+              },
+              child: Icon(
+                _hidePassword ? Icons.visibility_off : Icons.visibility_rounded,
+              ),
+            ),
           ),
           const SpaceHeight(24.0),
           BlocConsumer<LoginBloc, LoginState>(
@@ -89,6 +123,7 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                     (route) => false,
                   );
+                  LocalRemoteDatasource().saveToken(data.jwt);
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
                       content: Text(Variables.successRegister),
