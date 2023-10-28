@@ -18,6 +18,8 @@ class AuthRemoteDatasource {
 
     if (response.statusCode == 200) {
       return Right(AuthResponseModel.fromJson(response.body));
+    } else if (response.statusCode == 400) {
+      return Right(AuthResponseModel.fromJson(response.body));
     } else {
       return const Left('Service Error');
     }
@@ -31,7 +33,11 @@ class AuthRemoteDatasource {
       body: loginRequestModel.toJson(),
     );
 
+    print(response.statusCode);
+
     if (response.statusCode == 200) {
+      return Right(AuthResponseModel.fromJson(response.body));
+    } else if (response.statusCode == 400) {
       return Right(AuthResponseModel.fromJson(response.body));
     } else {
       return const Left('Login Gagal');

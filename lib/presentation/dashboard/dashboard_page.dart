@@ -1,11 +1,18 @@
 import 'package:fic9_ecommerce_template_app/common/constants/images.dart';
+import 'package:fic9_ecommerce_template_app/presentation/account/account_page.dart';
 import 'package:fic9_ecommerce_template_app/presentation/home/home_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../common/constants/colors.dart';
+import '../home/bloc/products/products_bloc.dart';
 
 class DashboardPage extends StatefulWidget {
-  const DashboardPage({super.key});
+  final String token;
+  const DashboardPage({
+    required this.token,
+    super.key,
+  });
 
   @override
   State<DashboardPage> createState() => _DashboardPageState();
@@ -14,13 +21,23 @@ class DashboardPage extends StatefulWidget {
 class _DashboardPageState extends State<DashboardPage> {
   int _selectedIndex = 0;
 
+  @override
+  void initState() {
+    initBloc();
+    super.initState();
+  }
+
+  void initBloc() {
+    context.read<ProductsBloc>().add(ProductsEvent.getAll(widget.token));
+  }
+
   final List<Widget> _pages = [
     const HomePage(),
     const Center(
       child: Text('Explore Page'),
     ),
     const Center(child: Text('Cart Page')),
-    const Center(child: Text('Account Page')),
+    const AccountPage(),
   ];
 
   void _onItemTapped(int index) {

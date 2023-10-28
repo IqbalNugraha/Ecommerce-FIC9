@@ -1,6 +1,6 @@
-import 'package:fic9_ecommerce_template_app/bloc/register/register_bloc.dart';
 import 'package:fic9_ecommerce_template_app/common/constants/variables.dart';
 import 'package:fic9_ecommerce_template_app/data/models/request/register_request_model.dart';
+import 'package:fic9_ecommerce_template_app/presentation/auth/bloc/register/register_bloc.dart';
 import 'package:fic9_ecommerce_template_app/presentation/auth/login_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

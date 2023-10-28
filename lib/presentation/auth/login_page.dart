@@ -1,9 +1,9 @@
-import 'package:fic9_ecommerce_template_app/bloc/login/login_bloc.dart';
 import 'package:fic9_ecommerce_template_app/common/constants/images.dart';
 import 'package:fic9_ecommerce_template_app/common/constants/variables.dart';
 import 'package:fic9_ecommerce_template_app/data/datasources/local_remote_datasources.dart';
 import 'package:fic9_ecommerce_template_app/data/models/request/login_request_model.dart';
-import 'package:fic9_ecommerce_template_app/presentation/home/dashboard_page.dart';
+import 'package:fic9_ecommerce_template_app/presentation/auth/bloc/login/login_bloc.dart';
+import 'package:fic9_ecommerce_template_app/presentation/dashboard/dashboard_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -24,27 +24,6 @@ class _LoginPageState extends State<LoginPage> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   bool _hidePassword = true;
-
-  @override
-  void initState() {
-    checkAuth();
-    super.initState();
-  }
-
-  void checkAuth() async {
-    final auth = await LocalRemoteDatasource().getToken();
-    if (auth.isNotEmpty) {
-      if (mounted) {
-        Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(
-            builder: (context) => const DashboardPage(),
-          ),
-          (route) => false,
-        );
-      }
-    }
-  }
 
   @override
   void dispose() {
@@ -117,19 +96,28 @@ class _LoginPageState extends State<LoginPage> {
               state.maybeWhen(
                 orElse: () {},
                 success: (data) {
-                  Navigator.of(context).pushAndRemoveUntil(
-                    MaterialPageRoute(
-                      builder: (context) => const DashboardPage(),
-                    ),
-                    (route) => false,
-                  );
-                  LocalRemoteDatasource().saveToken(data.jwt);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text(Variables.successRegister),
-                      backgroundColor: Colors.green,
-                    ),
-                  );
+                  if (data.error != null) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(data.error!.message!),
+                        backgroundColor: ColorName.red,
+                      ),
+                    );
+                  } else {
+                    Navigator.of(context).pushAndRemoveUntil(
+                      MaterialPageRoute(
+                        builder: (context) => DashboardPage(token: data.jwt!),
+                      ),
+                      (route) => false,
+                    );
+                    LocalRemoteDatasource().saveToken(data.jwt ?? "");
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text(Variables.successLogin),
+                        backgroundColor: Colors.green,
+                      ),
+                    );
+                  }
                 },
                 error: (message) {
                   ScaffoldMessenger.of(context).showSnackBar(

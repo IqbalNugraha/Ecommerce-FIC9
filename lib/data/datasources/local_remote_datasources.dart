@@ -11,7 +11,7 @@ class LocalRemoteDatasource {
     return pref.getString('token') ?? "";
   }
 
-  Future<void> removeToken(String token) async {
+  Future<void> removeToken() async {
     final pref = await SharedPreferences.getInstance();
     pref.remove('token');
   }

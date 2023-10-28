@@ -1,5 +1,7 @@
-import 'package:fic9_ecommerce_template_app/bloc/login/login_bloc.dart';
-import 'package:fic9_ecommerce_template_app/bloc/register/register_bloc.dart';
+import 'package:fic9_ecommerce_template_app/presentation/auth/bloc/login/login_bloc.dart';
+import 'package:fic9_ecommerce_template_app/presentation/auth/bloc/register/register_bloc.dart';
+import 'package:fic9_ecommerce_template_app/presentation/cart/bloc/cart/cart_bloc.dart';
+import 'package:fic9_ecommerce_template_app/presentation/home/bloc/products/products_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fic9_ecommerce_template_app/presentation/auth/splash_page.dart';
 import 'package:flutter/material.dart';
@@ -20,6 +22,12 @@ class MyApp extends StatelessWidget {
         ),
         BlocProvider(
           create: (context) => LoginBloc(),
+        ),
+        BlocProvider(
+          create: (context) => ProductsBloc(),
+        ),
+        BlocProvider(
+          create: (context) => CartBloc(),
         ),
       ],
       child: MaterialApp(
